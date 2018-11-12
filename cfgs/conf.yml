@@ -1,0 +1,6 @@
+- SETUP:
+    n_p: 52
+    n_fpp: 10
+    n_fpp_train: 7
+    n_t:
+    T: 100

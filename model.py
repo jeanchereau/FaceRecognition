@@ -43,17 +43,22 @@ def pca_lda(data_train, data_id_memory, m_lda=None, m_pca=None, n_p=52):
     return data_train_proj, w, mu
 
 
-class comm_submod (th.Thread):
-    def __init__(self, modelID, face_data_training, n_t, n_p, id_memory):
-        th.Thread.__init__(self)
-        self.modelID = modelID
-        self.face_data_training = face_data_training
+class comm_submod:
+    def __init__(self, model_id, data_train, n_t, n_p, data_id_memory):
+        self.model_id = model_id
+        self.data_train = data_train
         self.n_t = n_t
         self.n_p = n_p
-        self.id_memory = id_memory
-        self.W = None
+        self.data_id_memory = data_id_memory
+        self.data_train_proj = None
+        self.w = None
         self.mu = None
-    def run(self):
-        print('Starting Thread', self.modelID, '...')
-        self.W, self.mu = pca_lda(self.face_data_training, self.n_t, self.n_p, self.id_memory)
+    def setup(self):
+        print('Building sub-model', self.model_id, '...')
+        self.data_train, self.w, self.mu = pca_lda(self.data_train, self.n_t, self.n_p, self.data_id_memory)
         print('Thread', self.modelID, 'done!')
+
+
+class randsmp_submod:
+    def __init__(self, modelID, face_data_training, n_t, n_p, id_memory):
+        self.model
