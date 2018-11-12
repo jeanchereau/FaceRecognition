@@ -1,4 +1,8 @@
+import scipy.io as sio
 import numpy as np
+import threading as th
 
-import "model.py"
-import "test.py"
+from scipy.stats import mode
+
+import model
+import test
