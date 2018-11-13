@@ -57,7 +57,11 @@ def eigen_order(s, m=None):
     lc, vc = np.linalg.eig(s)
 
     indices = np.argsort(np.abs(lc))[::-1]
-    v = np.real_if_close(vc[:, indices], tol=0.001)[:, 0:m]
+
+    if type(m) is np.ndarray:
+        v = np.real_if_close(vc[:, indices], tol=0.001)[:, m]
+    else:
+        v = np.real_if_close(vc[:, indices], tol=0.001)[:, 0:m]
 
     return v
 

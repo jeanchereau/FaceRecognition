@@ -2,5 +2,6 @@
     n_p: 52
     n_fpp: 10
     n_fpp_train: 7
-    n_t:
-    T: 100
+    n_fpp_t: 7
+    T: 10
+    R: 10
