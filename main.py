@@ -23,6 +23,8 @@ for section in cfg:
             m0 = attr[1].get('m0')
             m1 = attr[1].get('m1')
             t_r = attr[1].get('R')
+        elif attr[0] == 'MMACH':
+            fusion = attr[1].get('fusion')
 print('Done!!')
 
 print('Downloading data...')
@@ -93,7 +95,7 @@ end = timer()
 print('Time: %.2f seconds' % float(end - start))
 print('Done!')
 print('Testing Master Machine...')
-test_mmachine(face_data_testing, *master, n_p=n_p, fusion='sum')
+test_mmachine(face_data_testing, *master, n_p=n_p, fusion=fusion)
 print('Done!')
 
 print('All Done!!!')
