@@ -2,7 +2,7 @@ import scipy.io as sio
 import numpy as np
 from functions import data_partition_train_test, data_train_subspace
 from model import pca, pca_lda, CommSubmod, RandsmpSubmod
-from test import test_pca_lda, test_machine
+from test import test_pca_lda, test_machine, test_mmachine
 from yaml import load
 from timeit import default_timer as timer
 
@@ -12,12 +12,16 @@ with open('cfgs/conf.yml', 'r') as ymlfile:
     cfg = load(ymlfile)
 for section in cfg:
     for attr in section.items():
-        if attr[0] == 'SETUP':
+        if attr[0] == 'BASE':
             n_p = attr[1].get('n_p')
             n_fpp = attr[1].get('n_fpp')
             n_fpp_train = attr[1].get('n_fpp_train')
+        elif attr[0] == 'COMM':
             n_t = attr[1].get('n_fpp_t') * n_p
             t_t = attr[1].get('T')
+        elif attr[0] == 'RANDSMP':
+            m0 = attr[1].get('m0')
+            m1 = attr[1].get('m1')
             t_r = attr[1].get('R')
 print('Done!!')
 
@@ -35,7 +39,7 @@ print('Done!!')
 
 print('Building PCA...')
 start = timer()
-face_data_training_proj_pca, u_pca, mu_pca = pca(face_data_training, m_pca=250)
+face_data_training_proj_pca, u_pca, mu_pca = pca(face_data_training)
 end = timer()
 print('Time: %.2f seconds' % float(end - start))
 print('Done!')
@@ -72,8 +76,7 @@ print('Building Random Sampling Machine...')
 start = timer()
 randsmp = []
 for i in range(0, t_r):
-    m = np.array([20, 10])
-    submod = RandsmpSubmod(i, face_data_training, id_memory, n_p, m[0], m[1])
+    submod = RandsmpSubmod(i, face_data_training, id_memory, n_p, m0, m1)
     submod.setup()
     randsmp.append(submod)
 end = timer()
@@ -81,6 +84,16 @@ print('Time: %.2f seconds' % float(end - start))
 print('Done!')
 print('Testing Random Sampling Machine...')
 test_machine(face_data_testing, randsmp, n_p)
+print('Done!')
+
+print('Building Master Machine...')
+start = timer()
+master = (comm, randsmp)
+end = timer()
+print('Time: %.2f seconds' % float(end - start))
+print('Done!')
+print('Testing Master Machine...')
+test_mmachine(face_data_testing, *master, n_p=n_p)
 print('Done!')
 
 # TODO: Output in excel file using pandas module

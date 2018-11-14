@@ -10,7 +10,7 @@ def pca(data_train, m_pca=None):
     st = (data_train - mu[:, None]).T.dot(data_train - mu[:, None])
 
     if m_pca is None:
-        m_pca = int(cols * 2 / 3)
+        m_pca = int(cols * 6 / 10)
 
     u = (data_train - mu[:, None]).dot(eigen_order(st, m=m_pca))
 
@@ -97,6 +97,6 @@ class RandsmpSubmod:
 
     def setup(self):
         print('Building Random Feature Sampling sub-model', self.model_id, '...')
-        m_array = np.concatenate((np.arange(self.m0), np.random.randint(self.m0, self.n_p-1, size=self.m1)), axis=None)
-        self.data_train_proj, self.w, self.mu = pca_lda(self.data_train, self.data_id_memory, m_lda=m_array, n_p=self.n_p)
+        m_ar = np.concatenate((np.arange(self.m0), np.random.randint(self.m0, self.n_p-1, size=self.m1)), axis=None)
+        self.data_train_proj, self.w, self.mu = pca_lda(self.data_train, self.data_id_memory, m_lda=m_ar, n_p=self.n_p)
         print('sub-model', self.model_id, 'done!')
