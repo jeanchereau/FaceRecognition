@@ -72,7 +72,7 @@ print('Testing Committee Machine...')
 test_machine(face_data_testing, comm, n_p)
 print('Done!')
 
-print('Building Random Sampling Machine...')
+print('Building Random Feature Sampling Machine...')
 start = timer()
 randsmp = []
 for i in range(0, t_r):
@@ -93,9 +93,7 @@ end = timer()
 print('Time: %.2f seconds' % float(end - start))
 print('Done!')
 print('Testing Master Machine...')
-test_mmachine(face_data_testing, *master, n_p=n_p)
+test_mmachine(face_data_testing, *master, n_p=n_p, fusion='sum')
 print('Done!')
-
-# TODO: Output in excel file using pandas module
 
 print('All Done!!!')
