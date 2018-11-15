@@ -24,7 +24,7 @@ def pca(data_train, m_pca=None):
     return data_train_proj, u, mu
 
 
-def pca_lda(data_train, data_id_memory, m_lda=None, m_pca=51, n_p=52):
+def pca_lda(data_train, data_id_memory, m_lda=None, m_pca=None, n_p=52):
     rows, cols = data_train.shape
 
     mu = np.mean(data_train, axis=1)

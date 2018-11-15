@@ -16,6 +16,8 @@ for section in cfg:
             n_p = attr[1].get('n_p')
             n_fpp = attr[1].get('n_fpp')
             n_fpp_train = attr[1].get('n_fpp_train')
+            m_pca = attr[1].get('m_pca')
+            m_lda = attr[1].get('m_lda')
         elif attr[0] == 'COMM':
             n_t = attr[1].get('n_fpp_t') * n_p
             t_t = attr[1].get('T')
@@ -26,7 +28,7 @@ for section in cfg:
         elif attr[0] == 'MMACH':
             fusion = attr[1].get('fusion')
 print('Done!!')
-
+print(type(m_pca))
 print('Downloading data...')
 mat_content = sio.loadmat('assets/face.mat')
 face_data = mat_content['X']
@@ -41,22 +43,22 @@ print('Done!!')
 
 print('Building PCA...')
 start = timer()
-face_data_training_proj_pca, u_pca, mu_pca = pca(face_data_training)
+face_data_training_pj_pca, u_pca, mu_pca = pca(face_data_training, m_pca=m_pca)
 end = timer()
 print('Time: %.2f seconds' % float(end - start))
 print('Done!')
 print('Testing PCA...')
-test_pca_lda(face_data_testing, id_memory, face_data_training_proj_pca, u_pca, mu_pca)
+test_pca_lda(face_data_testing, id_memory, face_data_training_pj_pca, u_pca, mu_pca)
 print('Done!')
 
 print('Building PCA-LDA Ensemble...')
 start = timer()
-face_data_training_proj_pca_lda, w_pca_lda, mu_pca_lda = pca_lda(face_data_training, id_memory)
+face_data_training_pj_pca_lda, w_pca_lda, mu_pca_lda = pca_lda(face_data_training, id_memory, m_pca=m_pca, m_lda=m_lda)
 end = timer()
 print('Time: %.2f seconds' % float(end - start))
 print('Done!')
 print('Testing PCA-LDA Ensemble...')
-test_pca_lda(face_data_testing, id_memory, face_data_training_proj_pca_lda, w_pca_lda, mu_pca_lda)
+test_pca_lda(face_data_testing, id_memory, face_data_training_pj_pca_lda, w_pca_lda, mu_pca_lda)
 print('Done!')
 
 print('Building Committee Machine...')
