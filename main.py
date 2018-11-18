@@ -7,6 +7,7 @@ from yaml import load
 from timeit import default_timer as timer
 
 
+# Get information from conf.yml in "cfgs" folder to assign parameters.
 print('Setting things up...')
 with open('cfgs/conf.yml', 'r') as ymlfile:
     cfg = load(ymlfile)
@@ -28,19 +29,23 @@ for section in cfg:
         elif attr[0] == 'MMACH':
             fusion = attr[1].get('fusion')
 print('Done!!')
-print(type(m_pca))
+# Load face data from face.mat in "assets" folder
 print('Downloading data...')
 mat_content = sio.loadmat('assets/face.mat')
 face_data = mat_content['X']
 print('Done!!')
 
+# Split the face data into training and testing sets based on conf.yml.
 print('Splitting data into training and test sets...')
 face_data_training, face_data_testing = data_partition_train_test(face_data, n_pp_train=n_fpp_train)
-id_memory = np.zeros(n_p * n_fpp_train, dtype=int)
+id_memory = np.zeros(n_p * n_fpp_train, dtype=int)  # Array to remember the identity of each face in face_data_training.
 for i in range(0, n_p):
     id_memory[i*n_fpp_train:(i+1)*n_fpp_train] = np.ones(n_fpp_train, dtype=int) * i
 print('Done!!')
 
+# Build PCA based model with training data.
+# Measure time to build.
+# Then test model with testing data.
 print('Building PCA...')
 start = timer()
 face_data_training_pj_pca, u_pca, mu_pca = pca(face_data_training, m_pca=m_pca)
@@ -51,6 +56,9 @@ print('Testing PCA...')
 test_pca_lda(face_data_testing, id_memory, face_data_training_pj_pca, u_pca, mu_pca)
 print('Done!')
 
+# Build PCA-LDA based model with training data.
+# Measure time to build.
+# Then test model with testing data.
 print('Building PCA-LDA Ensemble...')
 start = timer()
 face_data_training_pj_pca_lda, w_pca_lda, mu_pca_lda = pca_lda(face_data_training, id_memory, m_pca=m_pca, m_lda=m_lda)
@@ -61,6 +69,9 @@ print('Testing PCA-LDA Ensemble...')
 test_pca_lda(face_data_testing, id_memory, face_data_training_pj_pca_lda, w_pca_lda, mu_pca_lda)
 print('Done!')
 
+# Build Committee Machine with "bagging" technique on training data.
+# Measure time to build.
+# Then test model with testing data.
 print('Building Committee Machine...')
 start = timer()
 comm = []
@@ -76,6 +87,10 @@ print('Testing Committee Machine...')
 test_machine(face_data_testing, comm, n_p)
 print('Done!')
 
+# Build Random Feature Sampling Machine with randomisation in feature space.
+# Use training data.
+# Measure time to build.
+# Then test model with testing data.
 print('Building Random Feature Sampling Machine...')
 start = timer()
 randsmp = []
@@ -86,10 +101,13 @@ for i in range(0, t_r):
 end = timer()
 print('Time: %.2f seconds' % float(end - start))
 print('Done!')
-print('Testing Random Sampling Machine...')
+print('Testing Random Feature Sampling Machine...')
 test_machine(face_data_testing, randsmp, n_p)
 print('Done!')
 
+# Combine Committee Machine and Random Feature Sampling Machine.
+# Measure time to build (fast because both already built).
+# Then test model with testing data.
 print('Building Master Machine...')
 start = timer()
 master = (comm, randsmp)

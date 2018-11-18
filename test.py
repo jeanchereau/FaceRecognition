@@ -114,13 +114,11 @@ def test_mmachine(data_test, *mmachs, n_p=52, fusion='vote'):
                 p_id_pred_mtrx[i, k] = k_set.size
 
             i += 1
-            # print(p_id_pred_mtrx)
 
         if fusion_dict.get(fusion) == 0:
             y_pred[j] = mode(np.argmax(p_id_pred_mtrx, axis=1))[0]
         elif fusion_dict.get(fusion) == 1:
             y_pred[j] = np.argmax(np.prod(p_id_pred_mtrx, axis=0))
-            # print('Results:', y_actu[j], y_pred[j])
         elif fusion_dict.get(fusion) == 2:
             y_pred[j] = np.argmax(np.sum(p_id_pred_mtrx, axis=0))
 
