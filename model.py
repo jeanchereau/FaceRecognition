@@ -60,7 +60,10 @@ def pca_lda(data_train, data_id_memory, m_lda=None, m_pca=None, n_p=52):
         i_set = np.transpose(np.argwhere(m_pca > cols - 1 - n_p))[0]
         m_pca[i_set] = (cols - 1 - n_p) * np.ones(i_set.size)
         if m_lda is None:
-            m_lda = n_p - 1
+            if m_pca.size > n_p - 1:
+                m_lda = n_p - 1
+            else:
+                m_lda = m_pca.size
 
     st = (data_train - mu[:, None]).T.dot(data_train - mu[:, None])
     u = (data_train - mu[:, None]).dot(eigen_order(st, m=m_pca))
@@ -103,7 +106,7 @@ class RandsmpSubmod:
 
     def setup(self):
         print('Building Random Feature Sampling sub-model', self.model_id, '...')
-        array = np.random.permutation(np.arange(self.m0, self.n_p - 1))
+        array = np.random.permutation(np.arange(self.m0, self.data_train.shape[1] - self.n_p))
         m_ar = np.concatenate((np.arange(self.m0), array[0:self.m1]), axis=None)
         self.data_train_proj, self.w, self.mu = pca_lda(self.data_train, self.data_id_memory, m_pca=m_ar, n_p=self.n_p)
         print('sub-model', self.model_id, 'done!')
