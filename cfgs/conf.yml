@@ -1,15 +1,15 @@
 - BASE:             # Configurations for base models (PCA & PCA-LDA).
     n_p: 52             # Number of classes in data set.
     n_fpp: 10           # Number of data points in each class.
-    n_fpp_train: 7      # Number of unique data points in each class assigned to training set.
+    n_fpp_train: 8      # Number of unique data points in each class assigned to training set.
     m_pca:              # Mpca - can be integer (<= N - c) or empty (= None).
     m_lda:              # Mlda - can be integer (<= c - 1) or empty (= None).
 - COMM:             # Configurations for Committee Machine.
-    n_fpp_t: 7          # Expected number of data points in each class assigned to sub training set.
-    T: 5                # Number of sub-models (committee members).
+    n_fpp_t: 8          # Expected number of data points in each class assigned to sub training set.
+    T: 20               # Number of sub-models (committee members).
 - RANDSMP:          # Configurations for Random Feature Sampling.
     m0: 20              #
-    m1: 10              #
-    R: 5                #
+    m1: 30              #
+    R: 20               #
 - MMACH:            # Configurations for combination of Committee Machine & Random Feature Sampling Machine.
     fusion: 'vote'      # Fusion rule - {'vote', 'prod', 'sum'}.

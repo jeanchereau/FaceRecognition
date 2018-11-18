@@ -2,6 +2,7 @@ import numpy as np
 from functions import eigen_order
 
 
+# Model
 def pca(data_train, m_pca=None):
     rows, cols = data_train.shape
 
@@ -46,15 +47,20 @@ def pca_lda(data_train, data_id_memory, m_lda=None, m_pca=None, n_p=52):
     sb = (mu_cluster - mu[:, None]).dot((mu_cluster - mu[:, None]).T)
 
     if m_pca is None:
-        m_pca = n_p - 1 # np.linalg.matrix_rank(sb, tol=0.001)
+        m_pca = n_p - 1
         if m_lda is None:
             m_lda = int(m_pca * 2 / 3)
-    elif m_lda is None:
-        m_lda = m_pca
+    elif m_lda is None and type(m_pca) is not np.ndarray:
+        if m_pca > n_p - 1:
+            m_lda = n_p - 1
+        else:
+            m_lda = m_pca
 
-    if type(m_lda) is np.ndarray:
-        i_set = np.transpose(np.argwhere(m_lda > m_pca))[0]
-        m_lda[i_set] = m_pca * np.ones(i_set.size)
+    if type(m_pca) is np.ndarray:
+        i_set = np.transpose(np.argwhere(m_pca > cols - 1 - n_p))[0]
+        m_pca[i_set] = (cols - 1 - n_p) * np.ones(i_set.size)
+        if m_lda is None:
+            m_lda = n_p - 1
 
     st = (data_train - mu[:, None]).T.dot(data_train - mu[:, None])
     u = (data_train - mu[:, None]).dot(eigen_order(st, m=m_pca))
@@ -97,6 +103,7 @@ class RandsmpSubmod:
 
     def setup(self):
         print('Building Random Feature Sampling sub-model', self.model_id, '...')
-        m_ar = np.concatenate((np.arange(self.m0), np.random.randint(self.m0, self.n_p-1, size=self.m1)), axis=None)
-        self.data_train_proj, self.w, self.mu = pca_lda(self.data_train, self.data_id_memory, m_lda=m_ar, n_p=self.n_p)
+        array = np.random.permutation(np.arange(self.m0, self.n_p - 1))
+        m_ar = np.concatenate((np.arange(self.m0), array[0:self.m1]), axis=None)
+        self.data_train_proj, self.w, self.mu = pca_lda(self.data_train, self.data_id_memory, m_pca=m_ar, n_p=self.n_p)
         print('sub-model', self.model_id, 'done!')
